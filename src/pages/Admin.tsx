@@ -38,42 +38,18 @@ import {
   Wheat,
   MapPin,
   TrendingUp,
-  Database
+  Database as DatabaseIcon
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 
-// Database types
-interface DbState {
-  id: string;
-  name: string;
-  created_at?: string;
-  updated_at?: string;
-}
+// Database types from Supabase
+type DbState = Database['public']['Tables']['states']['Row'];
+type DbDistrict = Database['public']['Tables']['districts']['Row'];
+type DbCrop = Database['public']['Tables']['crops']['Row'];
 
-interface DbDistrict {
-  id: string;
-  name: string;
-  state_id: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-interface DbCrop {
-  id: string;
-  name: string;
-  district_id: string;
-  land_used: number;
-  expected_yield: number;
-  current_price: number;
-  season: string;
-  sowing_month: string;
-  harvest_month: string;
-  created_at?: string;
-  updated_at?: string;
-}
-
-// Database functions
+// Database functions with proper typing
 const dbQueries = {
   async getStates() {
     const { data, error } = await supabase
@@ -82,10 +58,10 @@ const dbQueries = {
       .order('name')
     
     if (error) throw error
-    return data as DbState[]
+    return data
   },
 
-  async createState(state: Omit<DbState, 'created_at' | 'updated_at'>) {
+  async createState(state: Database['public']['Tables']['states']['Insert']) {
     const { data, error } = await supabase
       .from('states')
       .insert(state)
@@ -93,7 +69,7 @@ const dbQueries = {
       .single()
     
     if (error) throw error
-    return data as DbState
+    return data
   },
 
   async getDistricts(stateId?: string) {
@@ -106,10 +82,10 @@ const dbQueries = {
     const { data, error } = await query.order('name')
     
     if (error) throw error
-    return data as DbDistrict[]
+    return data
   },
 
-  async createDistrict(district: Omit<DbDistrict, 'created_at' | 'updated_at'>) {
+  async createDistrict(district: Database['public']['Tables']['districts']['Insert']) {
     const { data, error } = await supabase
       .from('districts')
       .insert(district)
@@ -117,7 +93,7 @@ const dbQueries = {
       .single()
     
     if (error) throw error
-    return data as DbDistrict
+    return data
   },
 
   async getCrops(districtId?: string) {
@@ -130,10 +106,10 @@ const dbQueries = {
     const { data, error } = await query.order('name')
     
     if (error) throw error
-    return data as DbCrop[]
+    return data
   },
 
-  async createCrop(crop: Omit<DbCrop, 'id' | 'created_at' | 'updated_at'>) {
+  async createCrop(crop: Database['public']['Tables']['crops']['Insert']) {
     const { data, error } = await supabase
       .from('crops')
       .insert(crop)
@@ -141,10 +117,10 @@ const dbQueries = {
       .single()
     
     if (error) throw error
-    return data as DbCrop
+    return data
   },
 
-  async updateCrop(id: string, updates: Partial<DbCrop>) {
+  async updateCrop(id: string, updates: Database['public']['Tables']['crops']['Update']) {
     const { data, error } = await supabase
       .from('crops')
       .update({ ...updates, updated_at: new Date().toISOString() })
@@ -153,7 +129,7 @@ const dbQueries = {
       .single()
     
     if (error) throw error
-    return data as DbCrop
+    return data
   },
 
   async deleteCrop(id: string) {
@@ -379,7 +355,7 @@ const Admin = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2 text-lg">
-                <Database className="h-5 w-5 text-primary" />
+                <DatabaseIcon className="h-5 w-5 text-primary" />
                 <span>Total States</span>
               </CardTitle>
             </CardHeader>

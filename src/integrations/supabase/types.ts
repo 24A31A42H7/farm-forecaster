@@ -14,7 +14,154 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      crops: {
+        Row: {
+          created_at: string
+          current_price: number
+          district_id: string
+          expected_yield: number
+          harvest_month: string
+          id: string
+          land_used: number
+          name: string
+          season: string
+          sowing_month: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_price?: number
+          district_id: string
+          expected_yield?: number
+          harvest_month: string
+          id?: string
+          land_used?: number
+          name: string
+          season: string
+          sowing_month: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_price?: number
+          district_id?: string
+          expected_yield?: number
+          harvest_month?: string
+          id?: string
+          land_used?: number
+          name?: string
+          season?: string
+          sowing_month?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crops_district_id_fkey"
+            columns: ["district_id"]
+            isOneToOne: false
+            referencedRelation: "districts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      districts: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          state_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          state_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          state_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "districts_state_id_fkey"
+            columns: ["state_id"]
+            isOneToOne: false
+            referencedRelation: "states"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      price_predictions: {
+        Row: {
+          change_percentage: number
+          confidence: number
+          created_at: string
+          crop_name: string
+          current_price: number
+          demand: string
+          id: string
+          predicted_price: number
+          price_change: number
+          reason: string
+          supply: string
+          updated_at: string
+        }
+        Insert: {
+          change_percentage: number
+          confidence: number
+          created_at?: string
+          crop_name: string
+          current_price: number
+          demand: string
+          id?: string
+          predicted_price: number
+          price_change: number
+          reason: string
+          supply: string
+          updated_at?: string
+        }
+        Update: {
+          change_percentage?: number
+          confidence?: number
+          created_at?: string
+          crop_name?: string
+          current_price?: number
+          demand?: string
+          id?: string
+          predicted_price?: number
+          price_change?: number
+          reason?: string
+          supply?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      states: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
