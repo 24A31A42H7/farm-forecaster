@@ -41,7 +41,130 @@ import {
   Database
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { dbQueries, DbCrop, DbState, DbDistrict } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
+
+// Database types
+interface DbState {
+  id: string;
+  name: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface DbDistrict {
+  id: string;
+  name: string;
+  state_id: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface DbCrop {
+  id: string;
+  name: string;
+  district_id: string;
+  land_used: number;
+  expected_yield: number;
+  current_price: number;
+  season: string;
+  sowing_month: string;
+  harvest_month: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// Database functions
+const dbQueries = {
+  async getStates() {
+    const { data, error } = await supabase
+      .from('states')
+      .select('*')
+      .order('name')
+    
+    if (error) throw error
+    return data as DbState[]
+  },
+
+  async createState(state: Omit<DbState, 'created_at' | 'updated_at'>) {
+    const { data, error } = await supabase
+      .from('states')
+      .insert(state)
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data as DbState
+  },
+
+  async getDistricts(stateId?: string) {
+    let query = supabase.from('districts').select('*')
+    
+    if (stateId) {
+      query = query.eq('state_id', stateId)
+    }
+    
+    const { data, error } = await query.order('name')
+    
+    if (error) throw error
+    return data as DbDistrict[]
+  },
+
+  async createDistrict(district: Omit<DbDistrict, 'created_at' | 'updated_at'>) {
+    const { data, error } = await supabase
+      .from('districts')
+      .insert(district)
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data as DbDistrict
+  },
+
+  async getCrops(districtId?: string) {
+    let query = supabase.from('crops').select('*')
+    
+    if (districtId) {
+      query = query.eq('district_id', districtId)
+    }
+    
+    const { data, error } = await query.order('name')
+    
+    if (error) throw error
+    return data as DbCrop[]
+  },
+
+  async createCrop(crop: Omit<DbCrop, 'id' | 'created_at' | 'updated_at'>) {
+    const { data, error } = await supabase
+      .from('crops')
+      .insert(crop)
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data as DbCrop
+  },
+
+  async updateCrop(id: string, updates: Partial<DbCrop>) {
+    const { data, error } = await supabase
+      .from('crops')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single()
+    
+    if (error) throw error
+    return data as DbCrop
+  },
+
+  async deleteCrop(id: string) {
+    const { error } = await supabase
+      .from('crops')
+      .delete()
+      .eq('id', id)
+    
+    if (error) throw error
+  }
+};
 
 const Admin = () => {
   const [crops, setCrops] = useState<DbCrop[]>([]);
